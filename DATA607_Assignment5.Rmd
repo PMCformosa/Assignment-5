@@ -1,0 +1,91 @@
+---
+title: "DATA607_Assignment5"
+author: "Pei-Ming Chen"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+### Packages download
+
+```{r load-packages, message=FALSE}
+library(tidyr)
+library(dplyr)
+```
+
+### FLights data CSV. file was uploaded to my Github account. 
+
+```{r}
+flights <- "https://raw.githubusercontent.com/PMCformosa/Assignment-5/main/Data_Flights.csv"
+
+flights_Data <- read.table(flights,header = TRUE, sep=",", na.strings = c("","NA"))
+
+flights_Data 
+```
+
+### Tidy up the data 
+
+```{r }
+flights_Data[2,1] <- flights_Data[1,1]
+flights_Data[3,] <- flights_Data[4,] 
+flights_Data[5,1] <- flights_Data[4,1]
+flights_Data[4,] <- flights_Data[5,] 
+flights_Data <- flights_Data[-5,]
+
+flights_Data 
+```
+
+### Rename the first and second column head
+```{r}
+colnames (flights_Data) [1] <- "Airline"
+colnames (flights_Data) [2] <- "Arrival_status"
+
+flights_Data
+
+```
+
+### Convert wide data format into a long one by using gather function of tidyr package
+```{r}
+flights_LongData <- gather(flights_Data, "city", "n", 3:7)
+
+flights_LongData
+```
+
+```{r}
+dplyr::glimpse(flights_LongData)
+```
+### Spread the elements of the Arrival_status column into two separate columns names "delayed" and "on time" by using the spread() function of the dplyr package
+```{r}
+Airline_data2 <- flights_LongData %>% spread(Arrival_status, n)
+Airline_data2
+```
+### Rename the fourth column 
+```{r}
+colnames (Airline_data2)[4] <- "on_time"
+Airline_data2
+```
+### Use the pipe operator to obtain mean and median values of delayed or on_time numbers
+The result below showed that the mean number of delayed flights are 128.8 with a median number 83.5. And the mean number of on_time flights are 971.2 with a median 440. 
+```{r}
+Airline_data2 %>% summarise(mean = mean(delayed), median = median(delayed), n = n())
+Airline_data2 %>% summarise(mean = mean(on_time), median = median(on_time), n = n())
+
+```
+
+
+### Use the pipe operator to obtain the rate of on_time flights 
+The highest on_time rate is observed in ALASKA airline flying Phoenix. And the lowest on_time rate happened in AMWEST airline flying San.Francisco. 
+
+```{r}
+Airline_data2 <- mutate(Airline_data2, rate_on_time = on_time/(on_time+delayed))
+Airline_data3 <- mutate(Airline_data2, rate_delayed = delayed/(on_time+delayed))
+Airline_data3
+```
+
+```{r}
+Airline_data2 %>% 
+   group_by(Airline) %>% 
+        dplyr::summarise(max = max(delayed), min=min(delayed),
+        mean=mean(delayed), median=median(delayed))
+```
+
+Conclusion 
+From the data cleaning and analysis above, we can see that AMWEST airline had higher mean and median delayed flight numbers, compared to the numbers of ALASKA. AMWEST airline flying San.Francisco also had the lowest on_time rate.  
