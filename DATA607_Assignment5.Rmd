@@ -2,8 +2,13 @@
 title: "DATA607_Assignment5"
 author: "Pei-Ming Chen"
 date: "`r Sys.Date()`"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
 ---
+Create a .CSV file that includes all of the information above. It is encouraged to use a “wide” structure similar to how the information appears above, so that I  can practice tidying and transformations as described below. Read the information from your.CSV file in to R,and use tidyr and dplyr as needed to tidy and transform the data.Perform analysis to compare the arrival delays for the two airlines.The code should be in an R Markdown file, posted to rpubs.com, and should include narrative descriptions of the data cleanup work, analysis, and conclusions.
+
 ### Packages download
 
 ```{r load-packages, message=FALSE}
@@ -87,5 +92,5 @@ Airline_data2 %>%
         mean=mean(delayed), median=median(delayed))
 ```
 
-Conclusion 
+### Conclusion 
 From the data cleaning and analysis above, we can see that AMWEST airline had higher mean and median delayed flight numbers, compared to the numbers of ALASKA. AMWEST airline flying San.Francisco also had the lowest on_time rate.  
